@@ -1,5 +1,6 @@
+import "@/utils/associations";
+
 import { dbConnect } from "@/backend/db/dbConnect";
-import User from "@/backend/models/Users.models";
 import { ApiResponse } from "@/utils/ApiResponse";
 import { authHandler } from "@/utils/authHandler";
 import { handleApiError } from "@/utils/handleApiError";
@@ -9,22 +10,7 @@ await dbConnect();
 
 const GET = authHandler(async (request, context, currentUser) => {
   try {
-    const existingUser = await User.findOne({
-      attributes: {
-        exclude: [
-          "password",
-          "refresh_token",
-          "refresh_token_expires",
-          "createdAt",
-          "updatedAt",
-        ],
-      },
-      where: { id: currentUser.id },
-      raw: true,
-    });
-    // console.log(existingUser);
-
-    const responseData = { user: existingUser };
+    const responseData = { task: null };
 
     return NextResponse.json(
       new ApiResponse(
