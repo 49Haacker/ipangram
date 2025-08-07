@@ -9,9 +9,9 @@ const User = sequelize.define(
   "User",
   {
     id: {
-      type: Sequelize.UUIDV4,
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
-      autoIncrement: true,
       allowNull: false,
     },
     user_name: { type: Sequelize.STRING(12), allowNull: false, unique: true },
@@ -37,7 +37,7 @@ const User = sequelize.define(
       defaultValue: false,
     },
     verify_token: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(512),
       allowNull: true,
     },
     verify_token_expiry: {
@@ -45,7 +45,7 @@ const User = sequelize.define(
       allowNull: true,
     },
     reset_token: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(512),
       allowNull: true,
     },
     reset_token_expires: {
@@ -53,7 +53,7 @@ const User = sequelize.define(
       allowNull: true,
     },
     refresh_token: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(512),
       allowNull: true,
     },
     refresh_token_expires: {

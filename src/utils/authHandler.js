@@ -1,4 +1,4 @@
-import User from "@/backend/models/Users.models";
+import User from "@/backend/models/user.models";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 import { ApiError } from "./ApiError";
 import { handleApiError } from "./handleApiError";

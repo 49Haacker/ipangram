@@ -2,12 +2,12 @@ import { Sequelize } from "sequelize";
 import mysql from "mysql2";
 
 const sequelize = new Sequelize(
-  process.env.MYSQL_DB,
-  process.env.MYSQL_USERNAME,
-  process.env.MYSQL_PASSWORD,
+  process.env.DB_NAME,
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
   {
-    host: process.env.HOST,
-    dialect: "mysql",
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
     dialectModule: mysql,
     logging: false,
     timezone: "+05:30",

@@ -5,9 +5,9 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("users", {
       id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
       },
       user_name: { type: Sequelize.STRING(12), allowNull: false, unique: true },
@@ -33,7 +33,7 @@ module.exports = {
         defaultValue: false,
       },
       verify_token: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(512),
         allowNull: true,
       },
       verify_token_expiry: {
@@ -41,7 +41,7 @@ module.exports = {
         allowNull: true,
       },
       reset_token: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(512),
         allowNull: true,
       },
       reset_token_expires: {
@@ -49,7 +49,7 @@ module.exports = {
         allowNull: true,
       },
       refresh_token: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(512),
         allowNull: true,
       },
       refresh_token_expires: {

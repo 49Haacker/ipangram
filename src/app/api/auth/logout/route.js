@@ -1,5 +1,5 @@
 import { dbConnect } from "@/backend/db/dbConnect";
-import User from "@/backend/models/Users.models";
+import User from "@/backend/models/user.models";
 import { ApiResponse } from "@/utils/ApiResponse";
 import { clearAuthCookies, verifyAccessToken } from "@/utils/authUtils";
 import { handleApiError } from "@/utils/handleApiError";

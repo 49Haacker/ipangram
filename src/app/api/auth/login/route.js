@@ -1,5 +1,5 @@
 import { dbConnect } from "@/backend/db/dbConnect";
-import User from "@/backend/models/Users.models";
+import User from "@/backend/models/user.models";
 import { ApiError } from "@/utils/ApiError";
 import { ApiResponse } from "@/utils/ApiResponse";
 import { handleApiError } from "@/utils/handleApiError";
@@ -9,9 +9,9 @@ import ms from "ms";
 
 await dbConnect();
 
-const generateAccessAndRefreshTokens = async (user_id) => {
+const generateAccessAndRefreshTokens = async (id) => {
   try {
-    const currentUser = await User.findByPk(user_id);
+    const currentUser = await User.findByPk(id);
     if (!currentUser) {
       return NextResponse.json(new ApiResponse(404, null, "User not found"), {
         status: 404,
@@ -34,10 +34,12 @@ const generateAccessAndRefreshTokens = async (user_id) => {
   }
 };
 
-const POST = async (request) => {
+export const POST = async (request) => {
   try {
     const reqBody = await request.json();
     const { identifier, password } = reqBody;
+    // console.log("identifier, password", identifier, password);
+
     if (!(identifier && password)) {
       return NextResponse.json(
         new ApiResponse(400, null, "All fields are required"),
@@ -123,5 +125,3 @@ const POST = async (request) => {
     return handleApiError(error, request);
   }
 };
-
-export { POST };

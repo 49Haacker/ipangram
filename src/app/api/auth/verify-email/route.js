@@ -1,5 +1,5 @@
 import { dbConnect } from "@/backend/db/dbConnect";
-import User from "@/backend/models/Users.models";
+import User from "@/backend/models/user.models";
 import { ApiResponse } from "@/utils/ApiResponse";
 import { handleApiError } from "@/utils/handleApiError";
 import { NextResponse } from "next/server";
