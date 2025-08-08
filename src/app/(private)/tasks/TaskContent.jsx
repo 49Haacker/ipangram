@@ -25,7 +25,7 @@ import {
 import { useTaskContext } from "@/context/TaskContext";
 import { createTask } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
@@ -33,6 +33,8 @@ import toast from "react-hot-toast";
 
 const TaskContent = () => {
   const { taskForm, handleResetTask } = useTaskContext();
+
+  const queryClient = useQueryClient();
 
   const createTaskMutation = useMutation({
     mutationFn: (payload) => createTask(payload),
@@ -43,6 +45,7 @@ const TaskContent = () => {
       // console.log(res);
       toast.success(`Hey 👋, ${res.message}`, { id: "createTask-toast" });
       handleResetTask();
+      queryClient.invalidateQueries(["getNotifications"]);
     },
     onError: (error) => {
       // console.log(error);

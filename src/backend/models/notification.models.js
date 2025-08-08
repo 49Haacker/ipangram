@@ -10,12 +10,38 @@ const Notification = sequelize.define(
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
-    type: {
-      type: Sequelize.ENUM("TaskUpdated", "TaskAssigned", "Commented"),
+    user_id_fk: {
+      type: Sequelize.UUID,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    },
+    task_id_fk: {
+      type: Sequelize.UUID,
+      allowNull: true,
+      references: {
+        model: "tasks",
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "SET NULL",
+    },
+    message: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
-    message: { type: Sequelize.STRING, allowNull: false },
-    is_read: { type: Sequelize.BOOLEAN, defaultValue: false },
+    read: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    type: {
+      type: Sequelize.ENUM("task", "system", "reminder"),
+      defaultValue: "task",
+    },
   },
   { timestamps: true, tableName: "notifications" }
 );

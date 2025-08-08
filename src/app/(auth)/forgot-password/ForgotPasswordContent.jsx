@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import InputPassword from "@/components/ui/InputPassword";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { forgotPassword } from "@/lib/api";
 
 const formSchema = z.object({
@@ -31,6 +31,7 @@ const ForgotPasswordContent = () => {
   const searchParams = useSearchParams();
   const identifier = searchParams.get("identifier");
   // console.log(identifier);
+  const queryClient = useQueryClient();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -50,6 +51,7 @@ const ForgotPasswordContent = () => {
     onSuccess: (res) => {
       toast.success(`Hey 👋, ${res.message}`, { id: "forgot-toast" });
       resetForgotPassword();
+      queryClient.invalidateQueries(["getNotifications"]);
       router.push(
         `/verify-email?email=${res?.data.email}&userName=${res?.data.userName}&verifyToken=${res?.data.verifyToken}`
       );
@@ -83,7 +85,6 @@ const ForgotPasswordContent = () => {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSignin)} className="space-y-4">
-          {/* Identifier (email or username) */}
           <FormField
             control={form.control}
             name="identifier"
@@ -132,7 +133,6 @@ const ForgotPasswordContent = () => {
             )}
           />
 
-          {/* Submit Button */}
           <Button
             type="submit"
             variant="outline"

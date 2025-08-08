@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { LogIn, LogOut } from "lucide-react";
+import { Bell, Icon, LogIn, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,13 +10,15 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import LoadingSkeleton from "../skeleton/LoadingSkeleton";
 import ErrorSkeleton from "../skeleton/ErrorSkeleton";
 import { useRouter } from "next/navigation";
-import { getCurrentUser, logoutUser } from "@/lib/api";
+import { getCurrentUser, getNotifications, logoutUser } from "@/lib/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { formatTags } from "@/helpers/formatTags";
+import SmallLoadingSkeleton from "../skeleton/SmallLoadingSkeleton";
+import { Badge } from "../ui/badge";
+import NotificationDropdown from "./NotificationDropdown";
 
 const userItems = [
   {
@@ -36,11 +38,28 @@ const userItems = [
 const UserProfile = () => {
   const router = useRouter();
 
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const {
+    data: userData,
+    isLoading: userIsLoading,
+    isError: userIsError,
+    error: userError,
+    refetch: userRefetch,
+  } = useQuery({
     queryKey: ["getCurrentUser"],
     queryFn: getCurrentUser,
   });
-  // console.log("data", data);
+
+  const {
+    data: notificationData,
+    isLoading: notificationIsLoading,
+    isError: notificationIsError,
+    error: notificationError,
+    refetch: notificationRefetch,
+  } = useQuery({
+    queryKey: ["getNotifications"],
+    queryFn: getNotifications,
+  });
+  // console.log("notificationData", notificationData);
 
   const logoutMutation = useMutation({
     mutationFn: logoutUser,
@@ -48,7 +67,6 @@ const UserProfile = () => {
       toast.loading("Logging out...", { id: "logout-toast" });
     },
     onSuccess: (res) => {
-      // console.log(res?.data);
       if (res?.data?.alreadyLoggedOut) {
         toast.error(`Hey 👋, ${res.message || "Already logged out"}`, {
           id: "logout-toast",
@@ -74,59 +92,80 @@ const UserProfile = () => {
     logoutMutation.mutate();
   };
 
-  if (isError) {
-    return <ErrorSkeleton message={error.message} onRetry={() => refetch()} />;
+  if (userIsError || notificationIsError) {
+    return (
+      <ErrorSkeleton
+        message={userError?.message || notificationError?.message}
+        onRetry={() => {
+          userRefetch();
+          notificationRefetch();
+        }}
+      />
+    );
   }
 
-  if (isLoading || !data) {
-    <LoadingSkeleton />;
+  if (
+    userIsLoading ||
+    notificationIsLoading ||
+    !userData ||
+    !notificationData
+  ) {
+    return <SmallLoadingSkeleton />;
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Avatar className="cursor-pointer border-2 border-gray-500/60 dark:border-accent">
-          <AvatarFallback className="uppercase">
-            {formatTags(data?.user?.name || "Dummy")}
-          </AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
+    <div className="flex items-center gap-2">
+      {notificationData && (
+        <NotificationDropdown
+          notifications={notificationData?.notifications || []}
+        />
+      )}
 
-      <DropdownMenuContent className="w-40">
-        <DropdownMenuGroup>
-          {userItems.map((item, index) => {
-            const Icon = item.icon;
-            return item.action === "logout" ? (
-              <DropdownMenuItem
-                key={index}
-                onClick={handleLogout}
-                className="font-semibold dark:hover:text-primary cursor-pointer flex items-center justify-between"
-              >
-                <span>{item.title}</span>
-                <DropdownMenuShortcut>
-                  <Icon size={16} />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem
-                key={index}
-                className="font-semibold dark:hover:text-primary cursor-pointer"
-              >
-                <Link
-                  href={item.href}
-                  className="flex items-center justify-between w-full"
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Avatar className="cursor-pointer border-2 border-primary">
+            <AvatarFallback className="uppercase">
+              {formatTags(userData?.user?.name || "Dummy")}
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent className="w-40">
+          <DropdownMenuGroup>
+            {userItems.map((item, index) => {
+              const Icon = item.icon;
+              return item.action === "logout" ? (
+                <DropdownMenuItem
+                  key={index}
+                  onClick={handleLogout}
+                  className="font-semibold text-primary cursor-pointer flex items-center justify-between"
                 >
                   <span>{item.title}</span>
                   <DropdownMenuShortcut>
                     <Icon size={16} />
                   </DropdownMenuShortcut>
-                </Link>
-              </DropdownMenuItem>
-            );
-          })}
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem
+                  key={index}
+                  className="font-semibold text-primary cursor-pointer"
+                >
+                  <Link
+                    href={item.href}
+                    className="flex items-center justify-between w-full"
+                  >
+                    <span>{item.title}</span>
+                    <DropdownMenuShortcut>
+                      <Icon size={16} />
+                    </DropdownMenuShortcut>
+                  </Link>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 "use client";
-import { taskFormSchema } from "@/schemas/taskSchema";
+import { taskFormSchema, updateTaskSchema } from "@/schemas/taskSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { createContext, useContext } from "react";
 import { useForm } from "react-hook-form";
@@ -16,6 +16,7 @@ export const TaskContextProvider = ({ children }) => {
       status: "",
       dueDate: new Date(),
     },
+    mode: "onChange",
   });
 
   const handleResetTask = () => {

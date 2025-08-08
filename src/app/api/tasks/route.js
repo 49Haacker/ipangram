@@ -5,10 +5,12 @@ import { ApiResponse } from "@/utils/ApiResponse";
 import { authHandler } from "@/utils/authHandler";
 import { handleApiError } from "@/utils/handleApiError";
 import { NextResponse } from "next/server";
-import { getPaginationParams } from "@/utils/pagination";
+import { getPaginationMetadata, getPaginationParams } from "@/utils/pagination";
 
 import Task from "@/backend/models/task.models";
 import User from "@/backend/models/user.models";
+import { Op } from "sequelize";
+import Notification from "@/backend/models/notification.models";
 
 await dbConnect();
 
@@ -53,13 +55,20 @@ export const POST = authHandler(async (request, context, currentUser) => {
       );
     }
 
-    Task.create({
+    const createTask = await Task.create({
       title: task.title,
       description: task.description,
       priority: task.priority,
       status: task.status,
       due_date: new Date(task.dueDate),
       user_id_fk: currentUser.id,
+    });
+
+    await Notification.create({
+      user_id_fk: currentUser.id,
+      task_id_fk: createTask.id,
+      message: `New task created: ${task.title}`,
+      type: "task",
     });
 
     return NextResponse.json(
@@ -87,17 +96,46 @@ export const GET = authHandler(async (request, context, currentUser) => {
         { status: 403 }
       );
     }
+    const whereClause = {};
+    if (search) {
+      whereClause[Op.or] = [
+        { title: { [Op.like]: `%${search}%` } },
+        { description: { [Op.like]: `%${search}%` } },
+        { priority: { [Op.like]: `%${search}%` } },
+        { status: { [Op.like]: `%${search}%` } },
+      ];
+    }
 
     const existingTask = await Task.findAll({
-      attributes: ["id", "user_id_fk", "title", "description"],
+      attributes: [
+        "id",
+        "user_id_fk",
+        "title",
+        "description",
+        "priority",
+        "status",
+        "due_date",
+      ],
+      where: whereClause,
       include: [{ model: User, required: true, attributes: [] }],
+      ...(All ? {} : { limit, offset }),
       raw: true,
     });
 
-    console.log(existingTask);
+    let totalCount = 0;
+    if (!All) {
+      totalCount = await Task.count({ where: whereClause });
+    }
+    const pagination = All
+      ? undefined
+      : getPaginationMetadata(totalCount, limit, page, existingTask.length);
+
+    const responseData = All
+      ? { tasks: existingTask }
+      : { tasks: existingTask, pagination };
 
     return NextResponse.json(
-      new ApiResponse(200, null, "Successfully retriving task")
+      new ApiResponse(200, responseData, "Successfully retriving task")
     );
   } catch (error) {
     // console.log(error.name);

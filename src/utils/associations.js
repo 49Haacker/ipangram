@@ -8,22 +8,10 @@ import User from "@/backend/models/user.models";
 User.hasMany(Task, { foreignKey: "user_id_fk" });
 Task.belongsTo(User, { foreignKey: "user_id_fk" });
 
-// User.hasMany(Comment, { foreignKey: "user_id" });
-// Comment.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Notification, { foreignKey: "user_id_fk" });
+Notification.belongsTo(User, { foreignKey: "user_id_fk" });
 
-// Task.hasMany(Comment, { foreignKey: "task_id" });
-// Comment.belongsTo(Task, { foreignKey: "task_id" });
-
-// User.hasMany(Notification, { foreignKey: "user_id" });
-// Notification.belongsTo(User, { foreignKey: "user_id" });
-
-// Task.hasMany(Subtask, { foreignKey: "task_id" });
-// Subtask.belongsTo(Task, { foreignKey: "task_id" });
-
-// User.hasMany(ActivityLog, { foreignKey: "user_id" });
-// ActivityLog.belongsTo(User, { foreignKey: "user_id" });
-
-// Task.hasMany(ActivityLog, { foreignKey: "task_id" });
-// ActivityLog.belongsTo(Task, { foreignKey: "task_id" });
+Task.hasMany(Notification, { foreignKey: "task_id_fk" });
+Notification.belongsTo(Task, { foreignKey: "task_id_fk" });
 
 // export { User, Task, Comment, Notification, Subtask, ActivityLog };

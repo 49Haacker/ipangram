@@ -1,16 +1,13 @@
 import React, { Suspense } from "react";
-import TaskContentList from "./tasks/TaskContentList";
 import LoadingSkeleton from "@/components/skeleton/LoadingSkeleton";
 
-import { TaskContextProvider } from "@/context/TaskContext";
+import NotificationsContent from "./NotificationsContent";
 
 const page = () => {
   return (
     <>
       <Suspense fallback={<LoadingSkeleton />}>
-        <TaskContextProvider>
-          <TaskContentList />
-        </TaskContextProvider>
+        <NotificationsContent />
       </Suspense>
     </>
   );

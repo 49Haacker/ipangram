@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
-import ForgotPasswordContent from "./ForgotPasswordContent";
 import LoadingSkeleton from "@/components/skeleton/LoadingSkeleton";
+import ForgotPasswordContent from "./ForgotPasswordContent";
 
 const page = () => {
   return (

@@ -16,7 +16,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="w-full px-4 py-4">
+      <div className="w-full px-4 py-4 fixed top-0">
         <ul
           onMouseLeave={() => {
             setPosition((pv) => ({

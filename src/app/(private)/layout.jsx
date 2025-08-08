@@ -6,8 +6,9 @@ export default function PrivateLayout({ children }) {
   return (
     <>
       <div className="min-h-screen w-full flex flex-col gap-8">
+        {/* <div></div> */}
         <Navbar />
-        <main className="flex-1 px-4">{children}</main>
+        <main className="flex-1 px-4 pt-24">{children}</main>
         <Footer />
       </div>
     </>
