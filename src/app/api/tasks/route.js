@@ -9,7 +9,7 @@ import { getPaginationMetadata, getPaginationParams } from "@/utils/pagination";
 
 import Task from "@/backend/models/task.models";
 import User from "@/backend/models/user.models";
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import Notification from "@/backend/models/notification.models";
 
 await dbConnect();
@@ -86,16 +86,16 @@ export const GET = authHandler(async (request, context, currentUser) => {
     const { page, limit, offset, All, search } =
       getPaginationParams(searchParams);
 
-    if (currentUser.role === "user") {
-      return NextResponse.json(
-        new ApiResponse(
-          403,
-          null,
-          "Unauthorized access: This resource is only available to admin and users."
-        ),
-        { status: 403 }
-      );
-    }
+    // if (currentUser.role === "user") {
+    //   return NextResponse.json(
+    //     new ApiResponse(
+    //       403,
+    //       null,
+    //       "Unauthorized access: This resource is only available to admin and users."
+    //     ),
+    //     { status: 403 }
+    //   );
+    // }
     const whereClause = {};
     if (search) {
       whereClause[Op.or] = [
@@ -115,10 +115,12 @@ export const GET = authHandler(async (request, context, currentUser) => {
         "priority",
         "status",
         "due_date",
+        Sequelize.col("User.name"),
       ],
       where: whereClause,
       include: [{ model: User, required: true, attributes: [] }],
       ...(All ? {} : { limit, offset }),
+      order: [["createdAt", "DESC"]],
       raw: true,
     });
 

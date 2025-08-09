@@ -33,7 +33,7 @@ const TaskContentList = () => {
     queryFn: () => getTaskLists(currentPage, pageLimit, searchTerm),
     retry: false,
   });
-  //   console.log("data", data);
+  // console.log("data", data);
 
   const filteredData = filterData(data?.tasks || [], searchTerm);
   const pagination = data?.pagination || { totalPages: 1 };
@@ -107,7 +107,7 @@ const TaskContentList = () => {
             className="bg-white dark:bg-neutral-900 shadow-md rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 flex flex-col justify-between hover:shadow-lg transition"
           >
             <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-              {item.title}
+              {`${item.title} (${item.name})`}
             </h2>
 
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 flex-1">
